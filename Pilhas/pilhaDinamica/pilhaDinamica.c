@@ -1,56 +1,65 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
-    struct No* anterior; //ponteiro para o nó anterior
-    int v; //valor do nó
-} No;
+typedef struct elemento {
+    struct elemento* anterior; //ponteiro para o elemento anterior
+    int valor; //valor do elemento
+} Elemento;
 
 typedef struct {
-    No* topo; //ponteiro para o topo da pilha
+    Elemento* topo; //ponteiro para o topo da pilha
 } Pilha;
 
 //cria uma nova pilha
-Pilha* cria(){
-    Pilha *p = malloc(sizeof(Pilha));
-    p->topo = NULL; //inicializa o topo da pilha com nulo
-    return p;
-}
-
-//insere um valor novo na pilha
-void push(Pilha *p, int v){
-    No *no = malloc(sizeof(No));
-    no->v = v;
-    no->anterior = p->topo;
-    p->topo = no;
+Pilha* criar(){
+    Pilha* pilha = malloc(sizeof(Pilha));
+    pilha->topo = NULL; //inicializa o topo da pilha com nulo
+    return pilha;
 }
 
 //verifica se a pilha esta vazia
-int vazia(Pilha *p){
-    return p->topo == NULL;
+int vazia(Pilha* pilha){
+    return pilha->topo == NULL;
 }
 
-//remove elemento do topo da pilha
-int pop(Pilha *p){
+//insere um valor novo na pilha
+void empilhar(Pilha* pilha, int valor){ //push
+    Elemento* elemento = malloc(sizeof(Elemento));
+    elemento->valor = valor;
+    elemento->anterior = pilha->topo;
+    pilha->topo = elemento;
+}
+
+//remove elemento do topo da pilha (pop)
+int desempilhar(Pilha* pilha){  
     int v;
-    if (vazia(p)) {
+    if (vazia(pilha)) {
         printf("Pilha vazia");
         exit(-1);
     } else {
-        No* no = p->topo;
-        v = no->v; //recupera valor do topo
-        p->topo = no->anterior;
-        free(no);
+        Elemento* elemento = pilha->topo; //pilha->topo->valor
+        v = elemento->valor; //recupera valor do topo
+        pilha->topo = elemento->anterior;
+        free(elemento); //libera memória orfã
     }
     return v;
+}
+
+int espiar(Pilha* pilha){
+    if(!vazia(pilha)){
+        return pilha->topo->valor;
+    }else{
+        printf("Pilha vazia!");
+        exit(-1);
+    }
 }
 
 //libera memoria da pilha
 void limpa(Pilha *p){
     while (p->topo != NULL) {
-        No *no = p->topo;
-        p->topo = no->anterior;
-        free(no);
+        Elemento *elemento = p->topo;
+        p->topo = elemento->anterior;
+        free(elemento);
     }
     free(p);
 }
@@ -58,12 +67,23 @@ void limpa(Pilha *p){
 //visitar todos os elementos da pilha
 void percorre(Pilha *p){
     while (vazia(p)) {
-        int v = pop(p);
-        printf("%d", v);
+        int v = desempilhar(p);
+        printf(" %d", v);
     }
 }
 
 int main(){
+    int n = 10;
 
+    Pilha *pilha = criar();
+    printf("Empilha: ");
+    for(int i=0; i<=n; i++){
+        empilhar(pilha, i);
+        printf(" %d", espiar(pilha));
+    }
+    printf("\nDesempilha: ");
+    while(!vazia(pilha)){
+        printf(" %d", desempilhar(pilha));
+    }
     return 0;
 }
