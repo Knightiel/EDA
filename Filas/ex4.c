@@ -19,16 +19,16 @@ Fila* cria(int tamanho){
     return f;
 }
 
-int vazia(Fila* f){
+int vaziaEstatica(Fila* f){
     return f->cabeca == -1 && f->cauda == -1;
 }
 
-int cheia(Fila* f, int tamanho){
+int cheiaEstatica(Fila* f, int tamanho){
     return (f->cauda + 1) % tamanho == f->cabeca;
 }
 
-void adiciona(Fila* f, int valor, int tamanho){
-    if (cheia(f, tamanho)) {
+void adicionaEstatica(Fila* f, int valor, int tamanho){
+    if (cheiaEstatica(f, tamanho)) {
         printf("Capacidade máxima da fila foi alcançada");
         exit(-1);
     } else {
@@ -64,11 +64,11 @@ void adiciona(Fila* f, int valor, int tamanho){
 //     f = NULL;
 // }
 
-// void percorre(Fila* f){
-//     for (int i = f->cabeca; i != f->cauda; i = (i + 1) % MAX) {
-//         printf("%d", f->v[i]);
-//     }
-// }
+void percorre(Fila* f, int tamanho){
+    for (int i = 0; i<tamanho; i++) {
+        printf("%d", f->v[i]);
+    }
+}
 
 //Dinamica
 
@@ -93,42 +93,82 @@ int vazia(FilaDinamica *fila){
     return fila->cabeca == NULL && fila->cauda == NULL;
 }
 
-void adicionar(FilaDinamica *fila, int valor){
+// void adicionar(FilaDinamica *fila, int valor){
+//     No* no = malloc(sizeof(No));
+//     no->v = valor;
+//     no->proximo = NULL;
+//     if(vazia(fila)){
+//         fila->cabeca = no;
+//     }else{
+//         fila->cauda->proximo = (struct no*) no;
+//     }
+//     fila->cauda = no;
+// }
+
+void intersecao(FilaDinamica *fila, Fila* f1, Fila* f2, int n, int m){
     No* no = malloc(sizeof(No));
-    no->v = valor;
-    no->proximo = NULL;
-    if(vazia(fila)){
-        fila->cabeca = no;
-    }else{
-        fila->cauda->proximo = (struct no*) no;
-    }
-    fila->cauda = no;
+    int i, j;
+    for(i = 0; i<n; i++){
+        for(j=0; i<m; j++){
+            if(f1->v[i] == f2->v[j]){
+                no->v = f1->v[i];
+                no->proximo = NULL;
+                if(vazia(fila)){
+                    fila->cabeca = no;
+                }else{
+                    fila->cauda->proximo = (struct no*) no;
+                }
+                fila->cauda = no;
+            }
+        }
+    }     
 }
 
-void remover(FilaDinamica *fila){
-    if(!vazia(fila)){
-        No* no = fila->cabeca;
-        int valor = no->v;
-        fila->cabeca = fila->cabeca->proximo;
-        if(fila->cabeca == NULL){
-            fila->cauda = NULL;
-        }
-        free(no);
-        return valor;
-    }else{
-        printf("Fila vazia");
-        exit(0);
+// int remover(FilaDinamica *fila){
+//     if(!vazia(fila)){
+//         No* no = fila->cabeca;
+//         int valor = no->v;
+//         fila->cabeca = fila->cabeca->proximo;
+//         if(fila->cabeca == NULL){
+//             fila->cauda = NULL;
+//         }
+//         free(no);
+//         return valor;
+//     }else{
+//         printf("Fila vazia");
+//         exit(0);
+//     }
+// }
+
+void percorreDinamica(FilaDinamica *f){
+    No* no = f->cabeca;
+    while (no != NULL) {
+        printf("%d", no->v);
+        no = no->proximo;
     }
 }
+
 
 int main(){
     int n, m;
-    printf("Digite o tamanho do conjunto N");
+    printf("Digite o tamanho do conjunto N: ");
     scanf("%i", &n);
-    printf("Digite o tamanho do conjunto M");
+    Fila *filaEstatica1 = cria(n);
+    printf("Digite o tamanho do conjunto M: ");
     scanf("%i", &m);
+    int num;
+    Fila *filaEstatica2 = cria(m);
     for(int i=0; i<n; i++){
+        scanf("%i", &num);
+        adicionaEstatica(filaEstatica1, num, n);
     }
-    Fila *fila = criar();
+    for(int i=0; i<m; i++){
+        scanf("%i", &num);
+        adicionaEstatica(filaEstatica2, num, m);
+    }
+
+    FilaDinamica* filaD = criar();
+    intersecao(filaD, filaEstatica1, filaEstatica2, n, m);
+    percorreDinamica(filaD);
     return 0;
 }
